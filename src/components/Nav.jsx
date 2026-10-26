@@ -56,7 +56,7 @@ export default function Nav() {
           <span className="brand-mark">SN</span>
           <span className="brand-text">
             <span className="brand-name">Sahil Nikam</span>
-            <span className="brand-sub">Software Developer</span>
+            <span className="brand-sub">{profile.role}</span>
           </span>
         </Link>
 

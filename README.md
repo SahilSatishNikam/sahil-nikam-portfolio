@@ -1,6 +1,6 @@
 # Sahil Nikam — Software Developer Portfolio
 
-A modern, responsive React + Vite developer portfolio designed with a deep navy & electric blue palette, tailored for showcasing Java & Spring Boot backend engineering, projects, credentials, and experience.
+A modern, responsive React + Vite developer portfolio designed with a deep navy & electric blue palette, tailored for showcasing Java & Spring Boot backend engineering, projects, credentials, and experience (Software Developer Intern at Code Metric).
 
 ## Tech Stack
 - **Framework**: React 19 + Vite

@@ -25,7 +25,7 @@ export default function Footer() {
           <div className="footer-brand">
             <span className="footer-logo">Sahil Nikam</span>
             <p className="footer-tagline">
-              Software Developer specializing in Java, Spring Boot, REST APIs, and database engineering.
+              Software Developer Intern at Code Metric specializing in Java, Spring Boot, REST APIs, and database engineering.
             </p>
             <div className="footer-social-links">
               <a

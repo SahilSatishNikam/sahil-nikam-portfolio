@@ -742,7 +742,7 @@ img {
 }
 
 .photo-missing-fallback::after {
-  content: 'Sahil Nikam\A Software Developer';
+  content: 'Sahil Nikam\A Software Developer Intern';
   white-space: pre-wrap;
   text-align: center;
   font-family: var(--font-display);
@@ -1723,6 +1723,10 @@ img {
   line-height: 1.7;
   color: var(--text-secondary);
   margin: 0 0 18px;
+}
+
+.timeline-content-card > .experience-desc:last-child {
+  margin-bottom: 0;
 }
 
 .experience-highlights {

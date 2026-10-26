@@ -61,7 +61,7 @@ const staggerContainer = {
 };
 
 const roles = [
-  'Software Developer',
+  'Software Developer Intern',
   'Java Backend Engineer',
   'Spring Boot Specialist',
   'RESTful API Developer',
@@ -176,12 +176,10 @@ export default function Home() {
             animate="show"
             variants={{ show: { transition: { staggerChildren: 0.1 } } }}
           >
-            {profile.isOpenToOpportunities && (
-              <motion.div className="availability-pill" variants={fadeUp}>
-                <span className="pulse-indicator" />
-                <span>{profile.availabilityText}</span>
-              </motion.div>
-            )}
+            <motion.div className="availability-pill" variants={fadeUp}>
+              <span className="pulse-indicator" />
+              <span>Software Developer Intern at Code Metric</span>
+            </motion.div>
 
             <motion.span className="hero-greeting" variants={fadeUp}>
               {profile.tagline}
@@ -290,7 +288,7 @@ export default function Home() {
               <div className="profile-frame-inner">
                 <img
                   src={profile.avatar}
-                  alt="Sahil Nikam, Software Developer"
+                  alt="Sahil Nikam, Software Developer Intern at Code Metric"
                   className="profile-photo"
                   loading="eager"
                   onError={(e) => {
@@ -573,28 +571,34 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <p className="experience-desc">{exp.description}</p>
+                  {exp.description && (
+                    <p className="experience-desc">{exp.description}</p>
+                  )}
 
-                  <div className="experience-highlights">
-                    <span className="highlights-label">Key Responsibilities:</span>
-                    <ul>
-                      {exp.highlights.map((h, i) => (
-                        <li key={i}>
-                          <CheckCircle2 size={14} className="check-icon" />
-                          <span>{h}</span>
-                        </li>
+                  {exp.highlights && exp.highlights.length > 0 && (
+                    <div className="experience-highlights">
+                      <span className="highlights-label">Key Responsibilities:</span>
+                      <ul>
+                        {exp.highlights.map((h, i) => (
+                          <li key={i}>
+                            <CheckCircle2 size={14} className="check-icon" />
+                            <span>{h}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {exp.technologies && exp.technologies.length > 0 && (
+                    <div className="experience-tech-row">
+                      {exp.technologies.map((t) => (
+                        <span key={t} className="tech-tag">
+                          <TechIcon name={t} size={13} />
+                          <span>{t}</span>
+                        </span>
                       ))}
-                    </ul>
-                  </div>
-
-                  <div className="experience-tech-row">
-                    {exp.technologies.map((t) => (
-                      <span key={t} className="tech-tag">
-                        <TechIcon name={t} size={13} />
-                        <span>{t}</span>
-                      </span>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}

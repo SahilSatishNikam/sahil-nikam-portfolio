@@ -1,6 +1,8 @@
 export const profile = {
   name: 'Sahil Nikam',
-  role: 'Software Developer',
+  role: 'Software Developer Intern',
+  company: 'Code Metric',
+  startDate: 'October 2026',
   specialization: 'Java | Spring Boot | Backend Engineering',
   tagline: "HELLO, I'M",
   location: 'India',
@@ -13,9 +15,9 @@ export const profile = {
   isOpenToOpportunities: false,
   availabilityText: 'Available for technical collaborations & projects',
   heroLead:
-    'I build practical software applications and reliable backend systems using Java, Spring Boot, REST APIs, and relational databases. I enjoy solving technical problems and continuously improving my development skills.',
+    'Software Developer Intern at Code Metric (starting October 2026). I build practical software applications and reliable backend systems using Java, Spring Boot, REST APIs, and relational databases. I enjoy solving technical problems and continuously improving my development skills.',
   about:
-    "I'm Sahil Nikam, a Software Developer focused on building practical applications with Java and Spring Boot. My interests include backend development, REST API design, database integration, and full-stack application development. I enjoy learning new technologies, understanding how software systems work, and writing maintainable code.",
+    "I'm Sahil Nikam, a Software Developer Intern at Code Metric (starting October 2026) focused on building practical applications with Java and Spring Boot. My interests include backend development, REST API design, database integration, and full-stack application development. I enjoy learning new technologies, understanding how software systems work, and writing maintainable code.",
 };
 
 export const skills = [
@@ -155,26 +157,13 @@ export const experience = [
   {
     id: 'current-role',
     role: 'Software Developer Intern',
-    // Configurable employer name: Replace placeholder with your employer name
     company: 'Code Metric',
-    period: 'Present',
+    period: 'October 2026–Present',
     type: 'Internship',
     location: 'India',
-    description:
-      'Working on software development projects focusing on Java backend services, RESTful API development, database persistence, and application maintenance.',
-    highlights: [
-      'Developing and maintaining backend features and REST API endpoints using Java and Spring Boot.',
-      'Integrating relational databases using Spring Data JPA and Hibernate for reliable data access.',
-      'Collaborating on debugging, code readability, performance, and software lifecycle improvements.',
-    ],
-    technologies: [
-      'Java',
-      'Spring Boot',
-      'REST APIs',
-      'MySQL',
-      'Spring Data JPA',
-      'Git',
-    ],
+    description: 'Software Developer Intern starting October 2026.',
+    highlights: [],
+    technologies: [],
   },
   {
     id: 'internship-role',
