@@ -183,12 +183,12 @@ export const experience = [
 ];
 
 export const education = {
-  degree: 'Bachelor of Computer Applications (BCA)',
+  degree: 'Bachelor of Computer Science (BCS)',
   college: 'Karmaveer Bhaurao Patil College, Urun-Ishwarpur',
   university: 'Shivaji University, Kolhapur',
   location: 'Maharashtra, India',
   description:
-    'Studied computer application fundamentals including Object-Oriented Programming (OOP), Data Structures and Algorithms, Relational Database Management Systems (RDBMS), Software Engineering, and Web Development.',
+    'Studied core computer science fundamentals including Object-Oriented Programming (OOP), Data Structures and Algorithms, Relational Database Management Systems (RDBMS), Software Engineering, and Web Development.',
 };
 
 export const certification = {

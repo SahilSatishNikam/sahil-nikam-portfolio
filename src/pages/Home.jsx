@@ -636,7 +636,7 @@ export default function Home() {
             <span className="section-eyebrow">05 / ACADEMIC &amp; CREDENTIALS</span>
             <h2 className="section-title">Education &amp; Certification</h2>
             <p className="section-lead">
-              Academic degree in computer applications paired with professional full stack software certification.
+              Academic degree in computer science paired with professional full stack software certification.
             </p>
           </motion.div>
 
