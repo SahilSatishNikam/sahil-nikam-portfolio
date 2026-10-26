@@ -24,37 +24,35 @@ export const skills = [
   {
     group: 'Programming',
     category: 'Core Languages',
-    items: ['Java', 'JavaScript', 'SQL'],
+    items: ['Java', 'SQL', 'JavaScript'],
   },
   {
-    group: 'Java Backend Development',
-    category: 'Primary Specialization',
+    group: 'Backend',
+    category: 'Architecture & Frameworks',
     items: [
       'Core Java',
-      'Object-Oriented Programming',
-      'Collections',
-      'Exception Handling',
-      'Java 8 Streams and Lambda Expressions',
       'Spring Boot',
+      'REST APIs',
       'Spring Data JPA',
       'Hibernate',
       'JDBC',
-      'REST APIs',
+      'Java 8 Streams & Lambdas',
+      'Object-Oriented Programming (OOP)',
     ],
   },
   {
-    group: 'Databases',
-    category: 'Data Storage & Persistence',
+    group: 'Database',
+    category: 'Data Persistence',
     items: ['MySQL', 'PostgreSQL', 'MongoDB'],
   },
   {
-    group: 'Frontend Development',
+    group: 'Frontend',
     category: 'Client-side Engineering',
-    items: ['HTML5', 'CSS3', 'JavaScript', 'React.js'],
+    items: ['React.js', 'JavaScript', 'HTML5', 'CSS3'],
   },
   {
-    group: 'Development Tools',
-    category: 'Tooling & Workflows',
+    group: 'Tools',
+    category: 'Development & Build Workflow',
     items: ['Git', 'GitHub', 'Maven', 'Postman'],
   },
 ];
@@ -185,13 +183,12 @@ export const experience = [
 ];
 
 export const education = {
-  degree: 'Bachelor of Computer Science (BCS)',
-  college:
-    'Karmaveer Bhaurao Patil College, Urun-Ishwarpur',
-  university: 'Shivaj University,Kolhapur',
+  degree: 'Bachelor of Computer Applications (BCA)',
+  college: 'Karmaveer Bhaurao Patil College, Urun-Ishwarpur',
+  university: 'Shivaji University, Kolhapur',
   location: 'Maharashtra, India',
   description:
-    'Studied computer science fundamentals including Object-Oriented Programming (OOP), Data Structures and Algorithms, Relational Database Management Systems (RDBMS), Software Engineering, and Web Development.',
+    'Studied computer application fundamentals including Object-Oriented Programming (OOP), Data Structures and Algorithms, Relational Database Management Systems (RDBMS), Software Engineering, and Web Development.',
 };
 
 export const certification = {

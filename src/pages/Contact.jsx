@@ -3,58 +3,30 @@ import {
   ArrowLeft,
   ArrowUpRight,
   Check,
-  CheckCircle2,
   Copy,
+  ExternalLink,
   Github,
   Linkedin,
   Mail,
-  Send,
+  MapPin,
+  Sparkles,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { profile } from '../data';
 
 export default function Contact() {
   const [copied, setCopied] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-  const [submitted, setSubmitted] = useState(false);
 
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText(profile.email);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2200);
     } catch {
       window.location.href = `mailto:${profile.email}`;
     }
   };
-
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) return;
-
-    const subjectLine = encodeURIComponent(
-      formData.subject || `Portfolio Inquiry from ${formData.name}`
-    );
-    const bodyContent = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-    );
-
-    window.location.href = `mailto:${profile.email}?subject=${subjectLine}&body=${bodyContent}`;
-    setSubmitted(true);
-  };
-
-  const isEmailPlaceholder =
-    !profile.email || profile.email.includes('YOUR_EMAIL');
 
   return (
     <main className="contact-page wrap section-padding">
@@ -64,158 +36,140 @@ export default function Contact() {
       </Link>
 
       <div className="section-header">
-        <span className="section-eyebrow">GET IN TOUCH / DIRECT LINE</span>
-        <h1 className="section-title">Contact Sahil Nikam</h1>
+        <span className="section-eyebrow">GET IN TOUCH / DIRECT CHANNELS</span>
+        <h1 className="section-title">Connect with Sahil Nikam</h1>
         <p className="section-lead">
-          Have an interesting software engineering opportunity, technical inquiry, or want to connect? Reach out below.
+          Interested in software development collaborations, backend engineering discussions, or reviewing technical projects? Reach out through any of the verified channels below.
         </p>
       </div>
 
-      <div className="contact-grid-layout">
-        {/* Left Column: Direct Info */}
-        <div className="contact-info-col">
-          <div className="direct-card">
-            <span className="direct-label">DIRECT EMAIL</span>
-            <h2 className="direct-address">
-              {isEmailPlaceholder ? 'YOUR_EMAIL@example.com' : profile.email}
-            </h2>
-            <p className="direct-text">
-              {isEmailPlaceholder
-                ? 'Update your email in src/data.js before publishing.'
-                : 'Direct email is the fastest way to get in touch.'}
+      <div className="contact-cards-grid">
+        {/* 1. Direct Email Card */}
+        <motion.div
+          className="contact-card primary-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          whileHover={{ y: -4 }}
+        >
+          <div className="contact-card-icon-wrap">
+            <Mail size={26} />
+          </div>
+          <div className="contact-card-content">
+            <span className="contact-card-label">DIRECT EMAIL</span>
+            <h2 className="contact-card-title">{profile.email}</h2>
+            <p className="contact-card-desc">
+              Direct email is the most reliable way to reach me for job opportunities, technical inquiries, or engineering questions.
             </p>
+          </div>
+          <div className="contact-card-actions">
+            <button
+              onClick={copyEmail}
+              className="btn btn-secondary btn-sm"
+              aria-label="Copy email address"
+            >
+              {copied ? <Check size={14} /> : <Copy size={14} />}
+              <span>{copied ? 'Copied to Clipboard' : 'Copy Email'}</span>
+            </button>
+            <a
+              href={`mailto:${profile.email}`}
+              className="btn btn-primary btn-sm"
+            >
+              <span>Open Email Client</span>
+              <ArrowUpRight size={14} />
+            </a>
+          </div>
+        </motion.div>
 
-            <div className="direct-actions">
-              <button
-                onClick={copyEmail}
-                className="btn btn-secondary btn-sm"
-                aria-label="Copy email address"
-              >
-                {copied ? <Check size={15} /> : <Copy size={15} />}
-                <span>{copied ? 'Copied to Clipboard' : 'Copy Email'}</span>
-              </button>
-              <a
-                href={`mailto:${profile.email}`}
-                className="btn btn-outline btn-sm"
-              >
-                <span>Open Email App</span>
-                <ArrowUpRight size={14} />
-              </a>
+        {/* 2. LinkedIn Profile Card */}
+        <motion.div
+          className="contact-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          whileHover={{ y: -4 }}
+        >
+          <div className="contact-card-icon-wrap linkedin-wrap">
+            <Linkedin size={26} />
+          </div>
+          <div className="contact-card-content">
+            <span className="contact-card-label">PROFESSIONAL NETWORK</span>
+            <h2 className="contact-card-title">LinkedIn Profile</h2>
+            <p className="contact-card-desc">
+              Connect on LinkedIn to stay updated on my developer trajectory, backend projects, and engineering discussions.
+            </p>
+          </div>
+          <div className="contact-card-actions">
+            <a
+              href={profile.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-secondary btn-sm"
+              aria-label="Visit LinkedIn profile"
+            >
+              <span>Visit LinkedIn</span>
+              <ExternalLink size={14} />
+            </a>
+          </div>
+        </motion.div>
+
+        {/* 3. GitHub Profile Card */}
+        <motion.div
+          className="contact-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.15 }}
+          whileHover={{ y: -4 }}
+        >
+          <div className="contact-card-icon-wrap github-wrap">
+            <Github size={26} />
+          </div>
+          <div className="contact-card-content">
+            <span className="contact-card-label">CODE REPOSITORIES</span>
+            <h2 className="contact-card-title">GitHub Profile</h2>
+            <p className="contact-card-desc">
+              Inspect open-source repositories, Java &amp; Spring Boot architectures, MVC implementations, and database schemas.
+            </p>
+          </div>
+          <div className="contact-card-actions">
+            <a
+              href={profile.github}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-secondary btn-sm"
+              aria-label="Visit GitHub profile"
+            >
+              <span>Visit GitHub</span>
+              <ExternalLink size={14} />
+            </a>
+          </div>
+        </motion.div>
+
+        {/* 4. Current Status Card */}
+        <motion.div
+          className="contact-card status-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          whileHover={{ y: -4 }}
+        >
+          <div className="contact-card-icon-wrap status-wrap">
+            <MapPin size={26} />
+          </div>
+          <div className="contact-card-content">
+            <span className="contact-card-label">CURRENT POSITION &amp; LOCATION</span>
+            <h2 className="contact-card-title">Software Developer Intern</h2>
+            <p className="contact-card-desc">
+              Working at <strong>Code Metric</strong> (starting October 2026). Based in <strong>India</strong>. Open for technical collaborations and developer networking.
+            </p>
+          </div>
+          <div className="contact-card-actions">
+            <div className="active-status-pill">
+              <span className="pulse-indicator-emerald" />
+              <span>Available for Technical Discussions</span>
             </div>
           </div>
-
-          <div className="social-links-card">
-            <span className="direct-label">PROFESSIONAL PROFILES</span>
-            <div className="channel-list">
-              <a
-                href={profile.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="channel-item"
-              >
-                <div className="channel-icon-wrap">
-                  <Linkedin size={18} />
-                </div>
-                <div className="channel-text">
-                  <strong>LinkedIn</strong>
-                  <small>View professional profile</small>
-                </div>
-                <ArrowUpRight size={15} className="channel-arrow" />
-              </a>
-
-              <a
-                href={profile.github}
-                target="_blank"
-                rel="noreferrer"
-                className="channel-item"
-              >
-                <div className="channel-icon-wrap">
-                  <Github size={18} />
-                </div>
-                <div className="channel-text">
-                  <strong>GitHub</strong>
-                  <small>Inspect repositories and contributions</small>
-                </div>
-                <ArrowUpRight size={15} className="channel-arrow" />
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Form */}
-        <div className="contact-form-col">
-          <div className="contact-form-wrapper">
-            <h3 className="form-title">Send a Message</h3>
-            <p className="form-sub">
-              Submitting initiates your email client with your message pre-populated.
-            </p>
-
-            {submitted && (
-              <div className="form-success-banner" role="status">
-                <CheckCircle2 size={16} />
-                <span>Email client initiated with your message details.</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="contact-form">
-              <div className="form-group">
-                <label htmlFor="contact-name">Your Name</label>
-                <input
-                  id="contact-name"
-                  type="text"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleFormChange}
-                  placeholder="e.g. Alex Sharma"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="contact-email">Your Email Address</label>
-                <input
-                  id="contact-email"
-                  type="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleFormChange}
-                  placeholder="e.g. alex@example.com"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="contact-subject">Subject</label>
-                <input
-                  id="contact-subject"
-                  type="text"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleFormChange}
-                  placeholder="e.g. Backend Development Inquiry"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="contact-message">Message</label>
-                <textarea
-                  id="contact-message"
-                  name="message"
-                  rows={5}
-                  required
-                  value={formData.message}
-                  onChange={handleFormChange}
-                  placeholder="Write your message here..."
-                />
-              </div>
-
-              <button type="submit" className="btn btn-primary btn-block">
-                <Send size={16} />
-                <span>Send Message</span>
-              </button>
-            </form>
-          </div>
-        </div>
+        </motion.div>
       </div>
     </main>
   );

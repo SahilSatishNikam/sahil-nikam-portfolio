@@ -1,18 +1,60 @@
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Github, ExternalLink, CheckCircle2, Layers } from 'lucide-react';
+import { ArrowUpRight, Github, ExternalLink, CheckCircle2, Layers, Code2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TechIcon from './TechIcon';
 
 export default function ProjectCard({ project }) {
+  const cardRef = useRef(null);
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
   const isGithubConfigured =
-    project.github && !project.github.includes('YOUR_GITHUB');
+    project.github &&
+    !project.github.includes('YOUR_GITHUB') &&
+    project.github.trim() !== '';
   const hasDemo = Boolean(project.demo && project.demo.trim() !== '');
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    // Don't tilt if user prefers reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    // Restrained, subtle 3D tilt (max ~4.5 degrees)
+    const rotateX = ((y - centerY) / centerY) * -4.5;
+    const rotateY = ((x - centerX) / centerX) * 4.5;
+
+    setTilt({ rotateX, rotateY });
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTilt({ rotateX: 0, rotateY: 0 });
+  };
 
   return (
     <motion.article
-      className={`project-card accent-${project.accent}`}
-      whileHover={{ y: -6 }}
-      transition={{ duration: 0.25, ease: 'easeOut' }}
+      ref={cardRef}
+      className={`project-card accent-${project.accent} ${isHovered ? 'hovered' : ''}`}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: `perspective(1000px) rotateX(${tilt.rotateX.toFixed(2)}deg) rotateY(${tilt.rotateY.toFixed(2)}deg) translateY(${isHovered ? '-6px' : '0px'})`,
+        transition: isHovered
+          ? 'transform 0.1s ease-out, box-shadow 0.25s ease-out, border-color 0.25s ease-out'
+          : 'transform 0.4s ease-out, box-shadow 0.4s ease-out, border-color 0.4s ease-out',
+      }}
     >
       <div className="project-card-header">
         <div className="project-meta">
@@ -22,7 +64,7 @@ export default function ProjectCard({ project }) {
         <span className="project-status-badge">{project.status}</span>
       </div>
 
-      {/* Visual Illustration */}
+      {/* Visual System Mock Illustration */}
       <div className="project-art-container" aria-hidden="true">
         {project.visual === 'batch' && (
           <div className="illustration-wrapper illustration-batch">
@@ -134,7 +176,7 @@ export default function ProjectCard({ project }) {
           <p>{project.problemSolved}</p>
         </div>
 
-        {/* Important Implemented Features */}
+        {/* Key Implemented Features */}
         <div className="project-highlights">
           <span className="highlights-title">Key Implemented Features:</span>
           <ul className="highlights-list">
@@ -165,17 +207,17 @@ export default function ProjectCard({ project }) {
               target="_blank"
               rel="noreferrer"
               className="btn btn-secondary btn-sm"
-              aria-label={`View ${project.title} on GitHub`}
+              aria-label={`View ${project.title} Source Code on GitHub`}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
             >
               <Github size={15} />
-              <span>GitHub Repo</span>
+              <span>Source Code</span>
             </motion.a>
           ) : (
-            <span className="btn btn-disabled btn-sm" title="Repository URL can be configured in src/data.js">
+            <span className="btn btn-disabled btn-sm" title="Repository is private or being configured">
               <Github size={15} />
-              <span>Code Private</span>
+              <span>Source Code</span>
             </span>
           )}
 
@@ -196,9 +238,9 @@ export default function ProjectCard({ project }) {
           <Link
             to={`/projects/${project.slug}`}
             className="btn btn-outline btn-sm ml-auto"
-            aria-label={`View full details for ${project.title}`}
+            aria-label={`View Project details for ${project.title}`}
           >
-            <span>Project Details</span>
+            <span>View Project</span>
             <ArrowUpRight size={15} />
           </Link>
         </div>

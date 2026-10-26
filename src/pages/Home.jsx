@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowDown,
@@ -14,7 +14,6 @@ import {
   Layers,
   Linkedin,
   Mail,
-  Send,
   CheckCircle2,
   Copy,
   Check,
@@ -22,6 +21,10 @@ import {
   Terminal,
   Cpu,
   Sparkles,
+  Server,
+  Workflow,
+  MapPin,
+  Calendar,
 } from 'lucide-react';
 import {
   profile,
@@ -33,19 +36,21 @@ import {
 } from '../data';
 import ProjectCard from '../components/ProjectCard';
 import TechIcon from '../components/TechIcon';
+import DeveloperTerminal from '../components/DeveloperTerminal';
+import LiveBackground from '../components/LiveBackground';
 
 // Animation variants
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
 const fadeInUp = {
-  hidden: { opacity: 0, y: 32 },
+  hidden: { opacity: 0, y: 28 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
@@ -54,38 +59,64 @@ const staggerContainer = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.08,
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
     },
   },
 };
 
-const roles = [
-  'Software Developer Intern',
-  'Java Backend Engineer',
-  'Spring Boot Specialist',
-  'RESTful API Developer',
+const TYPEWRITER_WORDS = [
+  'Software Developer',
+  'Java Developer',
+  'Spring Boot Developer',
+  'Full Stack Developer',
 ];
 
 export default function Home() {
-  const [roleIndex, setRoleIndex] = useState(0);
+  // Typewriter effect state
+  const [wordIndex, setWordIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('Software Developer');
+  const [isDeleting, setIsDeleting] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [showResumeNotice, setShowResumeNotice] = useState(false);
 
-  // Dynamic role title cycling
+  // Typewriter effect
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRoleIndex((prev) => (prev + 1) % roles.length);
-    }, 2800);
-    return () => clearInterval(interval);
-  }, []);
+    // Respect prefers-reduced-motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setDisplayText('Software Developer');
+      return;
+    }
+
+    const currentFullWord = TYPEWRITER_WORDS[wordIndex];
+    let timer;
+
+    if (!isDeleting) {
+      // Typing characters
+      if (displayText.length < currentFullWord.length) {
+        timer = setTimeout(() => {
+          setDisplayText(currentFullWord.slice(0, displayText.length + 1));
+        }, 85);
+      } else {
+        // Word completed, pause before deleting
+        timer = setTimeout(() => {
+          setIsDeleting(true);
+        }, 1800);
+      }
+    } else {
+      // Deleting characters
+      if (displayText.length > 0) {
+        timer = setTimeout(() => {
+          setDisplayText(currentFullWord.slice(0, displayText.length - 1));
+        }, 45);
+      } else {
+        // Move to next word
+        setIsDeleting(false);
+        setWordIndex((prev) => (prev + 1) % TYPEWRITER_WORDS.length);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, wordIndex]);
 
   const copyEmail = async () => {
     try {
@@ -97,88 +128,55 @@ export default function Home() {
     }
   };
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) return;
-
-    const subjectLine = encodeURIComponent(
-      formData.subject || `Portfolio Inquiry from ${formData.name}`
-    );
-    const bodyContent = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-    );
-
-    window.location.href = `mailto:${profile.email}?subject=${subjectLine}&body=${bodyContent}`;
-    setFormSubmitted(true);
-  };
-
-  const handleResumeClick = (e) => {
-    fetch(profile.resume, { method: 'HEAD' })
-      .then((res) => {
-        if (!res.ok) {
-          setShowResumeNotice(true);
-        }
-      })
-      .catch(() => {
-        setShowResumeNotice(true);
-      });
-  };
-
-  const isEmailPlaceholder =
-    !profile.email || profile.email.includes('YOUR_EMAIL');
-
-  const tickerItems = [
-    'JAVA',
-    'SPRING BOOT',
-    'REST APIS',
-    'MYSQL',
-    'SPRING DATA JPA',
-    'HIBERNATE',
-    'POSTGRESQL',
-    'REACT.JS',
-    'MAVEN',
-    'POSTMAN',
-    'GIT & GITHUB',
-    'JAVA',
-    'SPRING BOOT',
-    'REST APIS',
-    'MYSQL',
-    'SPRING DATA JPA',
-    'HIBERNATE',
-    'POSTGRESQL',
-    'REACT.JS',
-    'MAVEN',
-    'POSTMAN',
-    'GIT & GITHUB',
-  ];
+  const tickerItems = useMemo(
+    () => [
+      'JAVA',
+      'SPRING BOOT',
+      'REST APIS',
+      'MYSQL',
+      'SPRING DATA JPA',
+      'HIBERNATE',
+      'POSTGRESQL',
+      'REACT.JS',
+      'MAVEN',
+      'POSTMAN',
+      'GIT & GITHUB',
+      'JAVA',
+      'SPRING BOOT',
+      'REST APIS',
+      'MYSQL',
+      'SPRING DATA JPA',
+      'HIBERNATE',
+      'POSTGRESQL',
+      'REACT.JS',
+      'MAVEN',
+      'POSTMAN',
+      'GIT & GITHUB',
+    ],
+    []
+  );
 
   return (
     <main className="main-content">
+      {/* Live background ambient lighting & floating subtle particles */}
+      <LiveBackground />
+
       {/* ====================================================
-          1. HERO SECTION WITH AMBIENT ORBS & PROFILE FLOAT
+          1. HERO SECTION WITH TYPEWRITER, PHOTO GLOW & TERMINAL
           ==================================================== */}
       <section className="hero-section" id="home">
-        {/* Animated background ambient glowing lights */}
-        <div className="hero-ambient-glow orb-1" aria-hidden="true" />
-        <div className="hero-ambient-glow orb-2" aria-hidden="true" />
-        <div className="hero-ambient-grid" aria-hidden="true" />
-
         <div className="hero-container wrap">
           {/* Left Column: Introduction & CTAs */}
           <motion.div
             className="hero-left"
             initial="hidden"
             animate="show"
-            variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+            variants={{ show: { transition: { staggerChildren: 0.08 } } }}
           >
-            <motion.div className="availability-pill" variants={fadeUp}>
-              <span className="pulse-indicator" />
-              <span>Software Developer Intern at Code Metric</span>
+            {/* Active Position Badge */}
+            <motion.div className="hero-badge-pill" variants={fadeUp}>
+              <span className="pulse-indicator-emerald" />
+              <span>Software Developer Intern @ Code Metric</span>
             </motion.div>
 
             <motion.span className="hero-greeting" variants={fadeUp}>
@@ -189,22 +187,15 @@ export default function Home() {
               {profile.name}
             </motion.h1>
 
-            <motion.div className="hero-title-container" variants={fadeUp}>
-              <span className="role-prefix">Specializing as </span>
-              <div className="role-slider-wrapper">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={roleIndex}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -16 }}
-                    transition={{ duration: 0.35, ease: 'easeOut' }}
-                    className="hero-role-animated"
-                  >
-                    {roles[roleIndex]}
-                  </motion.span>
-                </AnimatePresence>
-              </div>
+            {/* Typewriter Dynamic Title */}
+            <motion.div className="hero-typewriter-container" variants={fadeUp}>
+              <span className="typewriter-prefix">I am a </span>
+              <span className="typewriter-word-wrap">
+                <span className="typewriter-text">{displayText}</span>
+                <span className="typewriter-cursor" aria-hidden="true">
+                  |
+                </span>
+              </span>
             </motion.div>
 
             <motion.p className="hero-specialization" variants={fadeUp}>
@@ -215,6 +206,7 @@ export default function Home() {
               {profile.heroLead}
             </motion.p>
 
+            {/* Hero Action Buttons */}
             <motion.div className="hero-actions" variants={fadeUp}>
               <motion.a
                 href="#projects"
@@ -222,14 +214,13 @@ export default function Home() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <span>Explore My Projects</span>
+                <span>Explore Projects</span>
                 <ArrowDown size={16} />
               </motion.a>
 
               <motion.a
                 href={profile.resume}
                 download="SAHIL_NIKAM_SDE.pdf"
-                onClick={handleResumeClick}
                 className="btn btn-secondary"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
@@ -238,12 +229,18 @@ export default function Home() {
                 <span>Download Resume</span>
               </motion.a>
 
-              <a href="#contact" className="hero-text-link">
-                <span>Get In Touch</span>
+              <motion.a
+                href="#contact"
+                className="btn btn-outline"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span>Contact Me</span>
                 <ArrowUpRight size={15} />
-              </a>
+              </motion.a>
             </motion.div>
 
+            {/* Social Links Row */}
             <motion.div className="hero-social-row" variants={fadeUp}>
               <span className="social-label">CONNECT:</span>
               <a
@@ -253,7 +250,7 @@ export default function Home() {
                 className="social-chip"
                 aria-label="GitHub Profile"
               >
-                <Github size={16} />
+                <Github size={15} />
                 <span>GitHub</span>
               </a>
               <a
@@ -263,7 +260,7 @@ export default function Home() {
                 className="social-chip"
                 aria-label="LinkedIn Profile"
               >
-                <Linkedin size={16} />
+                <Linkedin size={15} />
                 <span>LinkedIn</span>
               </a>
               <a
@@ -271,54 +268,60 @@ export default function Home() {
                 className="social-chip"
                 aria-label="Send Email"
               >
-                <Mail size={16} />
+                <Mail size={15} />
                 <span>Email</span>
               </a>
             </motion.div>
           </motion.div>
 
-          {/* Right Column: Actual Professional Profile Photo with Shimmer Frame */}
+          {/* Right Column: Profile Photograph with Animated Glow + Compact Developer Terminal */}
           <motion.div
             className="hero-right"
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.75, delay: 0.2, ease: 'easeOut' }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.15, ease: 'easeOut' }}
           >
-            <div className="profile-frame-outer">
-              <div className="profile-frame-inner">
-                <img
-                  src={profile.avatar}
-                  alt="Sahil Nikam, Software Developer Intern at Code Metric"
-                  className="profile-photo"
-                  loading="eager"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    if (e.currentTarget.parentElement) {
-                      e.currentTarget.parentElement.classList.add(
-                        'photo-missing-fallback'
-                      );
-                    }
-                  }}
-                />
+            {/* Glowing Photo Card */}
+            <div className="hero-media-stack">
+              <div className="profile-frame-outer">
+                <div className="profile-frame-inner">
+                  <img
+                    src={profile.avatar}
+                    alt="Sahil Nikam, Software Developer Intern at Code Metric"
+                    className="profile-photo"
+                    loading="eager"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      if (e.currentTarget.parentElement) {
+                        e.currentTarget.parentElement.classList.add(
+                          'photo-missing-fallback'
+                        );
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Floating Contextual Badge */}
+                <div className="hero-floating-badge">
+                  <div className="badge-icon-wrap">
+                    <Briefcase size={16} />
+                  </div>
+                  <div className="badge-text-wrap">
+                    <span className="badge-title">Code Metric</span>
+                    <span className="badge-sub">Software Developer Intern</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Floating Contextual Badge with counter-float */}
-              <div className="hero-floating-badge">
-                <div className="badge-icon-wrap">
-                  <Code2 size={16} />
-                </div>
-                <div className="badge-text-wrap">
-                  <span className="badge-title">Backend Focus</span>
-                  <span className="badge-sub">Java &bull; Spring Boot</span>
-                </div>
-              </div>
+              {/* Developer Terminal Visual Simulation */}
+              <DeveloperTerminal />
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* ====================================================
-          2. INFINITE TECH MARQUEE TICKER
+          2. TECH MARQUEE TICKER
           ==================================================== */}
       <div className="ticker-section" aria-hidden="true">
         <div className="ticker-track">
@@ -335,7 +338,7 @@ export default function Home() {
       </div>
 
       {/* ====================================================
-          3. ABOUT ME SECTION (SCROLL-TRIGGERED STAGGER)
+          3. ABOUT SECTION
           ==================================================== */}
       <motion.section
         className="section-padding about-section"
@@ -350,7 +353,7 @@ export default function Home() {
             <span className="section-eyebrow">01 / BACKGROUND &amp; PHILOSOPHY</span>
             <h2 className="section-title">About Me</h2>
             <p className="section-lead">
-              Focused on engineering dependable backend systems, structured databases, and readable software solutions.
+              Focused on engineering dependable backend services, clean database architectures, and maintainable software systems.
             </p>
           </motion.div>
 
@@ -358,10 +361,18 @@ export default function Home() {
             <motion.div className="about-narrative" variants={fadeInUp}>
               <p className="narrative-p highlight">{profile.about}</p>
               <p className="narrative-p">
-                My academic journey in the <strong>Bachelor of Computer Science (BCS)</strong> program provided a solid grounding in software fundamentals, algorithms, and database systems. Further strengthening my practical skills, I completed the <strong>Java Full Stack Development</strong> certification from <strong>Fortune Cloud</strong>, immersing myself in real-world Java enterprise patterns, REST API construction, and persistent data layers.
+                My academic journey in the{' '}
+                <strong>{education.degree}</strong> program at{' '}
+                <strong>{education.college}</strong> (
+                {education.university}) established my strong foundation in core computer science, relational databases, object-oriented programming, and algorithms.
               </p>
               <p className="narrative-p">
-                I believe that good software is built with intention: clear architecture, thorough testing with tools like Postman, and collaborative version control using Git.
+                Furthering my hands-on enterprise capabilities, I completed the{' '}
+                <strong>{certification.title}</strong> program from{' '}
+                <strong>{certification.institution}</strong>, mastering Spring Boot, Spring Data JPA, Hibernate, and RESTful API engineering with MySQL.
+              </p>
+              <p className="narrative-p">
+                I approach software with a focus on code readability, solid API contracts, proper testing via Postman, and collaborative version control with Git.
               </p>
 
               <div className="about-cta-row">
@@ -371,7 +382,7 @@ export default function Home() {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <span>Explore My Toolkit</span>
+                  <span>Explore Skills</span>
                   <ArrowDown size={15} />
                 </motion.a>
                 <motion.a
@@ -391,21 +402,21 @@ export default function Home() {
             <motion.div className="about-cards-column" variants={fadeInUp}>
               <motion.div
                 className="about-feature-card"
-                whileHover={{ y: -4, borderColor: 'var(--accent-blue)' }}
+                whileHover={{ y: -4 }}
                 transition={{ duration: 0.2 }}
               >
                 <div className="card-icon-box">
-                  <Terminal size={20} />
+                  <Server size={20} />
                 </div>
-                <h3>Clean Backend Architecture</h3>
+                <h3>Backend Architecture</h3>
                 <p>
-                  Layered Spring Boot applications featuring clear boundaries across Controller, Service, and Repository layers for maintainability and testability.
+                  Layered Spring Boot applications featuring clear separation of concerns across Controller, Service, and Repository layers for maintainability and testability.
                 </p>
               </motion.div>
 
               <motion.div
                 className="about-feature-card"
-                whileHover={{ y: -4, borderColor: 'var(--accent-blue)' }}
+                whileHover={{ y: -4 }}
                 transition={{ duration: 0.2 }}
               >
                 <div className="card-icon-box">
@@ -413,21 +424,21 @@ export default function Home() {
                 </div>
                 <h3>Relational Data Engineering</h3>
                 <p>
-                  Designing normalized schemas in MySQL and PostgreSQL, managing transactions, and leveraging Spring Data JPA and Hibernate for reliable data access.
+                  Designing normalized schemas in MySQL, managing data integrity, and leveraging Spring Data JPA &amp; Hibernate for efficient ORM persistence.
                 </p>
               </motion.div>
 
               <motion.div
                 className="about-feature-card"
-                whileHover={{ y: -4, borderColor: 'var(--accent-blue)' }}
+                whileHover={{ y: -4 }}
                 transition={{ duration: 0.2 }}
               >
                 <div className="card-icon-box">
-                  <Cpu size={20} />
+                  <Workflow size={20} />
                 </div>
-                <h3>Continuous Learning</h3>
+                <h3>Practical Software Engineering</h3>
                 <p>
-                  Committed to exploring modern software tools, deepening Java 8+ features, and continuously refining development workflows.
+                  Writing clean, readable code, structuring maintainable RESTful HTTP endpoints, and continuously expanding Java backend capabilities.
                 </p>
               </motion.div>
             </motion.div>
@@ -436,7 +447,7 @@ export default function Home() {
       </motion.section>
 
       {/* ====================================================
-          4. TECHNICAL SKILLS SECTION (DYNAMIC REVEAL)
+          4. SKILLS SECTION (5 CATEGORIES)
           ==================================================== */}
       <motion.section
         className="section-padding skills-section"
@@ -451,7 +462,7 @@ export default function Home() {
             <span className="section-eyebrow">02 / TECHNICAL TOOLKIT</span>
             <h2 className="section-title">Technical Skills</h2>
             <p className="section-lead">
-              Organized into distinct groups representing my core backend focus and supporting development capabilities.
+              Structured into key domains representing my core backend focus and supporting development capabilities.
             </p>
           </motion.div>
 
@@ -492,7 +503,7 @@ export default function Home() {
       </motion.section>
 
       {/* ====================================================
-          5. PROJECTS SECTION (STAGGERED CARDS)
+          5. PROJECTS SECTION (3D TILT & SOURCE LINKS)
           ==================================================== */}
       <motion.section
         className="section-padding projects-section"
@@ -518,16 +529,16 @@ export default function Home() {
           </div>
 
           <motion.div className="projects-footer-note" variants={fadeInUp}>
-            <span className="pulse-indicator" />
+            <span className="pulse-indicator-emerald" />
             <span>
-              All project source codes and ongoing updates are maintained on GitHub. Specific repository links can be configured in <code>src/data.js</code>.
+              All project source codes and ongoing updates are maintained on GitHub.
             </span>
           </motion.div>
         </div>
       </motion.section>
 
       {/* ====================================================
-          6. PROFESSIONAL EXPERIENCE SECTION (TIMELINE ANIMATION)
+          6. PROFESSIONAL EXPERIENCE SECTION (TIMELINE)
           ==================================================== */}
       <motion.section
         className="section-padding experience-section"
@@ -566,7 +577,10 @@ export default function Home() {
                       <span className="experience-company">{exp.company}</span>
                     </div>
                     <div className="experience-badge-wrap">
-                      <span className="experience-period">{exp.period}</span>
+                      <span className="experience-period">
+                        <Calendar size={12} className="inline-icon" />
+                        {exp.period}
+                      </span>
                       <span className="experience-type">{exp.type}</span>
                     </div>
                   </div>
@@ -603,17 +617,11 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
-
-          <motion.div className="config-hint-box" variants={fadeInUp}>
-            <small>
-              Note: Current employer details, tenure dates, and project assignments are fully editable via <code>src/data.js</code>.
-            </small>
-          </motion.div>
         </div>
       </motion.section>
 
       {/* ====================================================
-          7. EDUCATION & CERTIFICATIONS SECTION
+          7. EDUCATION & CERTIFICATION SECTION
           ==================================================== */}
       <motion.section
         className="section-padding education-section"
@@ -628,7 +636,7 @@ export default function Home() {
             <span className="section-eyebrow">05 / ACADEMIC &amp; CREDENTIALS</span>
             <h2 className="section-title">Education &amp; Certification</h2>
             <p className="section-lead">
-              Academic degree in computer science paired with professional full stack software certification.
+              Academic degree in computer applications paired with professional full stack software certification.
             </p>
           </motion.div>
 
@@ -649,7 +657,9 @@ export default function Home() {
               <h3 className="credential-title">{education.degree}</h3>
               <div className="credential-institution">
                 <strong>{education.college}</strong>
-                <span>{education.university} &bull; {education.location}</span>
+                <span>
+                  {education.university} &bull; {education.location}
+                </span>
               </div>
               <p className="credential-description">{education.description}</p>
             </motion.div>
@@ -687,7 +697,7 @@ export default function Home() {
       </motion.section>
 
       {/* ====================================================
-          8. RESUME CTA SECTION (SHIMMER BANNER)
+          8. RESUME CTA SECTION
           ==================================================== */}
       <motion.section
         className="section-padding resume-section"
@@ -700,17 +710,16 @@ export default function Home() {
         <div className="wrap">
           <motion.div className="resume-banner" variants={fadeInUp}>
             <div className="resume-banner-content">
-              <span className="banner-eyebrow">PROFESSIONAL DOSSIER</span>
-              <h2 className="banner-title">Looking for a verified developer profile?</h2>
+              <span className="banner-eyebrow">PROFESSIONAL PROFILE</span>
+              <h2 className="banner-title">Looking for a verified developer resume?</h2>
               <p className="banner-desc">
-                Review my comprehensive academic background, verified coursework, technical competencies, and development experience in a formatted resume.
+                Review my academic background, technical competencies, and developer experience in a clean, formatted PDF resume.
               </p>
               <div className="banner-buttons">
                 <motion.a
                   href={profile.resume}
                   target="_blank"
                   rel="noreferrer"
-                  onClick={handleResumeClick}
                   className="btn btn-primary btn-glow"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
@@ -721,7 +730,6 @@ export default function Home() {
                 <motion.a
                   href={profile.resume}
                   download="SAHIL_NIKAM_SDE.pdf"
-                  onClick={handleResumeClick}
                   className="btn btn-secondary"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
@@ -750,28 +758,11 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
-
-          {showResumeNotice && (
-            <div className="resume-notice-box">
-              <div className="notice-inner">
-                <p>
-                  <strong>Resume File Setup:</strong> Place your PDF at{' '}
-                  <code>public/resume/SAHIL_NIKAM_SDE.pdf</code> to enable direct one-click viewing and downloading.
-                </p>
-                <button
-                  onClick={() => setShowResumeNotice(false)}
-                  className="notice-dismiss-btn"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </motion.section>
 
       {/* ====================================================
-          9. CONTACT SECTION
+          9. CONTACT SECTION (VERIFIED INTERACTIVE CARDS)
           ==================================================== */}
       <motion.section
         className="section-padding contact-section"
@@ -784,168 +775,135 @@ export default function Home() {
         <div className="wrap">
           <motion.div className="section-header" variants={fadeInUp}>
             <span className="section-eyebrow">06 / GET IN TOUCH</span>
-            <h2 className="section-title">Contact</h2>
+            <h2 className="section-title">Let’s Connect</h2>
             <p className="section-lead">
-              Have a question, software development opportunity, or want to discuss technical projects? Send a message directly.
+              Interested in collaborating, discussing software engineering opportunities, or reviewing technical projects? Reach out through any of the channels below.
             </p>
           </motion.div>
 
-          <div className="contact-grid-layout">
-            {/* Left: Contact Info & Direct Links */}
-            <motion.div className="contact-info-col" variants={fadeInUp}>
-              <div className="direct-card">
-                <span className="direct-label">DIRECT EMAIL</span>
-                <h3 className="direct-address">
-                  {isEmailPlaceholder ? 'YOUR_EMAIL@example.com' : profile.email}
-                </h3>
-                <p className="direct-text">
-                  {isEmailPlaceholder
-                    ? 'Update your email address in src/data.js before publishing.'
-                    : 'The quickest way to get in touch for technical inquiries or discussions.'}
-                </p>
-
-                <div className="direct-actions">
-                  <motion.button
-                    onClick={copyEmail}
-                    className="btn btn-secondary btn-sm"
-                    aria-label="Copy email address"
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {copiedEmail ? <Check size={15} /> : <Copy size={15} />}
-                    <span>{copiedEmail ? 'Copied to Clipboard!' : 'Copy Email'}</span>
-                  </motion.button>
-                  <a
-                    href={`mailto:${profile.email}`}
-                    className="btn btn-outline btn-sm"
-                  >
-                    <span>Open Email Client</span>
-                    <ArrowUpRight size={14} />
-                  </a>
-                </div>
+          <div className="contact-cards-grid">
+            {/* 1. Direct Email Card */}
+            <motion.div
+              className="contact-card primary-card"
+              variants={fadeInUp}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="contact-card-icon-wrap">
+                <Mail size={24} />
               </div>
-
-              <div className="social-links-card">
-                <span className="direct-label">PROFESSIONAL CHANNELS</span>
-                <div className="channel-list">
-                  <motion.a
-                    href={profile.linkedin}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="channel-item"
-                    whileHover={{ x: 4 }}
-                  >
-                    <div className="channel-icon-wrap">
-                      <Linkedin size={18} />
-                    </div>
-                    <div className="channel-text">
-                      <strong>LinkedIn</strong>
-                      <small>Connect with Sahil Nikam</small>
-                    </div>
-                    <ArrowUpRight size={15} className="channel-arrow" />
-                  </motion.a>
-
-                  <motion.a
-                    href={profile.github}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="channel-item"
-                    whileHover={{ x: 4 }}
-                  >
-                    <div className="channel-icon-wrap">
-                      <Github size={18} />
-                    </div>
-                    <div className="channel-text">
-                      <strong>GitHub</strong>
-                      <small>Browse code repositories</small>
-                    </div>
-                    <ArrowUpRight size={15} className="channel-arrow" />
-                  </motion.a>
-                </div>
+              <div className="contact-card-content">
+                <span className="contact-card-label">DIRECT EMAIL</span>
+                <h3 className="contact-card-title">{profile.email}</h3>
+                <p className="contact-card-desc">
+                  The quickest way to reach me for opportunities, technical queries, or professional messages.
+                </p>
+              </div>
+              <div className="contact-card-actions">
+                <button
+                  onClick={copyEmail}
+                  className="btn btn-secondary btn-sm"
+                  aria-label="Copy email address"
+                >
+                  {copiedEmail ? <Check size={14} /> : <Copy size={14} />}
+                  <span>{copiedEmail ? 'Copied to Clipboard' : 'Copy Email'}</span>
+                </button>
+                <a
+                  href={`mailto:${profile.email}`}
+                  className="btn btn-primary btn-sm"
+                >
+                  <span>Open Email Client</span>
+                  <ArrowUpRight size={14} />
+                </a>
               </div>
             </motion.div>
 
-            {/* Right: Functional Message Form */}
-            <motion.div className="contact-form-col" variants={fadeInUp}>
-              <div className="contact-form-wrapper">
-                <h3 className="form-title">Send a Direct Message</h3>
-                <p className="form-sub">
-                  Fill in your message below. Submitting will open your default email client with your message pre-filled.
+            {/* 2. LinkedIn Card */}
+            <motion.div
+              className="contact-card"
+              variants={fadeInUp}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="contact-card-icon-wrap linkedin-wrap">
+                <Linkedin size={24} />
+              </div>
+              <div className="contact-card-content">
+                <span className="contact-card-label">PROFESSIONAL NETWORK</span>
+                <h3 className="contact-card-title">LinkedIn Profile</h3>
+                <p className="contact-card-desc">
+                  Connect with me on LinkedIn to follow my ongoing developer journey, network, or discuss backend tech.
                 </p>
+              </div>
+              <div className="contact-card-actions">
+                <a
+                  href={profile.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-secondary btn-sm"
+                  aria-label="Visit LinkedIn profile"
+                >
+                  <span>Visit LinkedIn</span>
+                  <ExternalLink size={14} />
+                </a>
+              </div>
+            </motion.div>
 
-                {formSubmitted && (
-                  <motion.div
-                    className="form-success-banner"
-                    role="status"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                  >
-                    <CheckCircle2 size={16} />
-                    <span>Email client initiated with your message details.</span>
-                  </motion.div>
-                )}
+            {/* 3. GitHub Card */}
+            <motion.div
+              className="contact-card"
+              variants={fadeInUp}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="contact-card-icon-wrap github-wrap">
+                <Github size={24} />
+              </div>
+              <div className="contact-card-content">
+                <span className="contact-card-label">SOURCE REPOSITORIES</span>
+                <h3 className="contact-card-title">GitHub Profile</h3>
+                <p className="contact-card-desc">
+                  Explore my project source code, repository commits, Java architectures, and technical implementations.
+                </p>
+              </div>
+              <div className="contact-card-actions">
+                <a
+                  href={profile.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-secondary btn-sm"
+                  aria-label="Visit GitHub repositories"
+                >
+                  <span>Visit GitHub</span>
+                  <ExternalLink size={14} />
+                </a>
+              </div>
+            </motion.div>
 
-                <form onSubmit={handleFormSubmit} className="contact-form">
-                  <div className="form-group">
-                    <label htmlFor="contact-name">Your Name</label>
-                    <input
-                      id="contact-name"
-                      type="text"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleFormChange}
-                      placeholder="e.g. Alex Sharma"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="contact-email">Your Email Address</label>
-                    <input
-                      id="contact-email"
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleFormChange}
-                      placeholder="e.g. alex@example.com"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="contact-subject">Subject</label>
-                    <input
-                      id="contact-subject"
-                      type="text"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleFormChange}
-                      placeholder="e.g. Software Development Project"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="contact-message">Message</label>
-                    <textarea
-                      id="contact-message"
-                      name="message"
-                      rows={5}
-                      required
-                      value={formData.message}
-                      onChange={handleFormChange}
-                      placeholder="Write your message here..."
-                    />
-                  </div>
-
-                  <motion.button
-                    type="submit"
-                    className="btn btn-primary btn-block btn-glow"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Send size={16} />
-                    <span>Compose &amp; Send Message</span>
-                  </motion.button>
-                </form>
+            {/* 4. Current Status & Location Card */}
+            <motion.div
+              className="contact-card status-card"
+              variants={fadeInUp}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="contact-card-icon-wrap status-wrap">
+                <MapPin size={24} />
+              </div>
+              <div className="contact-card-content">
+                <span className="contact-card-label">CURRENT STATUS</span>
+                <h3 className="contact-card-title">
+                  Software Developer Intern
+                </h3>
+                <p className="contact-card-desc">
+                  Working at <strong>Code Metric</strong> (starting October 2026). Based in <strong>India</strong>. Open to technical collaborations and engineering discussions.
+                </p>
+              </div>
+              <div className="contact-card-actions">
+                <div className="active-status-pill">
+                  <span className="pulse-indicator-emerald" />
+                  <span>Available for Technical Projects</span>
+                </div>
               </div>
             </motion.div>
           </div>
